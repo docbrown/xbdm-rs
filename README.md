@@ -1,9 +1,10 @@
 xbdm
 ====
 
-[![crates.io](https://img.shields.io/crates/v/xbdm.svg)](https://crates.io/crates/xbdm)
-
 Xbox Debug Monitor client for Rust
+
+[![crates.io](https://img.shields.io/crates/v/xbdm.svg)](https://crates.io/crates/xbdm)
+[![Build Status](https://travis-ci.org/docbrown/xbdm-rs.svg?branch=master)](https://travis-ci.org/docbrown/xbdm-rs)
 
 [Documentation](https://docs.rs/xbdm)
 
@@ -20,6 +21,13 @@ Next, add this to your crate root:
 
 ```rust
 extern crate xbdm;
+```
+
+Finfally, lookup an Xbox by its debug name and connect to it:
+
+```rust
+let xbox = xbdm::resolve("MYXBOX").unwrap().unwrap();
+let mut client = xbdm::Client::connect(xbox).unwrap();
 ```
 
 ## License
