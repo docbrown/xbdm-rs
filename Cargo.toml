@@ -7,6 +7,12 @@ readme = "README.md"
 repository = "https://github.com/docbrown/xbdm-rs"
 homepage = "https://github.com/docbrown/xbdm-rs"
 description = "Xbox Debug Monitor client for Rust"
+keywords = ["xbdm", "xbox", "xbox360", "debug", "debugger"]
+categories = [
+    "development-tools",
+    "development-tools::debugging",
+    "network-programming"
+]
 
 [dependencies]
 bufstream = "0.1"
