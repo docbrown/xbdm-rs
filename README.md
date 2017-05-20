@@ -1,7 +1,11 @@
 xbdm
 ====
 
+[![crates.io](https://img.shields.io/crates/v/xbdm.svg)](https://crates.io/crates/xbdm)
+
 Xbox Debug Monitor client for Rust
+
+[Documentation](https://docs.rs/xbdm)
 
 ## Usage
 
