@@ -1,0 +1,12 @@
+[package]
+name = "xbdm"
+version = "0.1.0-alpha"
+authors = ["David Brown <cypher543@gmail.com>"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/docbrown/xbdm-rs"
+homepage = "https://github.com/docbrown/xbdm-rs"
+description = "Xbox Debug Monitor client for Rust"
+
+[dependencies]
+bufstream = "0.1"
