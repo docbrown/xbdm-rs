@@ -23,10 +23,10 @@ Next, add this to your crate root:
 extern crate xbdm;
 ```
 
-Finfally, lookup an Xbox by its debug name and connect to it:
+Finfally, lookup an Xbox by its debug name or IP address and connect to it:
 
 ```rust
-let xbox = xbdm::resolve("MYXBOX").unwrap().unwrap();
+let xbox = xbdm::resolve("MYXBOX").unwrap();
 let mut client = xbdm::Client::connect(xbox).unwrap();
 ```
 

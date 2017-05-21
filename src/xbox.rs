@@ -66,6 +66,7 @@ impl Iterator for Discover {
         loop {
             let (n, src) = match self.socket.recv_from(&mut buf) {
                 Ok(x) => x,
+                Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
                 Err(_) => break,
             };
             if let Some(xbox) = parse_reply(&buf[..n], src) {
@@ -92,19 +93,15 @@ pub fn discover() -> io::Result<Discover> {
 
 /// Resolve the Xbox debug name or IP address specified by `host`
 /// as an `Xbox` instance.
-pub fn resolve(host: &str) -> io::Result<Option<Xbox>> {
+pub fn resolve(host: &str) -> io::Result<Xbox> {
     match host.parse() {
         Ok(ip) => resolve_ip(ip),
         _ => resolve_name(host),
     }
 }
 
-fn is_timeout(e: &io::Error) -> bool {
-    e.kind() == io::ErrorKind::WouldBlock || e.kind() == io::ErrorKind::TimedOut
-}
-
 /// Resolve the IP address specified by `ip` as an `Xbox` instance.
-pub fn resolve_ip(ip: Ipv4Addr) -> io::Result<Option<Xbox>> {
+pub fn resolve_ip(ip: Ipv4Addr) -> io::Result<Xbox> {
     let mut buf = [0; MAX_PACKET_LENGTH];
     buf[0] = 3;
     buf[1] = 0;
@@ -117,25 +114,25 @@ pub fn resolve_ip(ip: Ipv4Addr) -> io::Result<Option<Xbox>> {
     loop {
         let (n, src) = match socket.recv_from(&mut buf) {
             Ok(x) => x,
-            Err(ref e) if is_timeout(e) => break,
+            Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
             Err(e) => return Err(e),
         };
         if let Some(xbox) = parse_reply(&buf[..n], src) {
             if xbox.ip == ip {
-                return Ok(Some(xbox));
+                return Ok(xbox);
             }
         }
     }
-    Ok(None)
 }
 
 /// Resolve the Xbox debug name specified by `name` as an `Xbox` instance.
-pub fn resolve_name(name: &str) -> io::Result<Option<Xbox>> {
+pub fn resolve_name(name: &str) -> io::Result<Xbox> {
     if name.len() == 0 {
-        return Ok(None)
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput, "name is too short"));
     } else if name.len() > MAX_NAME_LENGTH {
         return Err(io::Error::new(
-            io::ErrorKind::InvalidInput, "name is too long"))
+            io::ErrorKind::InvalidInput, "name is too long"));
     }
 
     let timeout = Some(Duration::from_millis(RESOLVE_TIMEOUT_MILLIS));
@@ -156,15 +153,13 @@ pub fn resolve_name(name: &str) -> io::Result<Option<Xbox>> {
     loop {
         let (n, src) = match socket.recv_from(&mut buf) {
             Ok(x) => x,
-            Err(ref e) if is_timeout(e) => break,
+            Err(ref e) if e.kind() == io::ErrorKind::Interrupted => continue,
             Err(e) => return Err(e),
         };
         if let Some(xbox) = parse_reply(&buf[..n], src) {
             if xbox.name == name {
-                return Ok(Some(xbox));
+                return Ok(xbox);
             }
         }
     }
-
-    Ok(None)
 }
